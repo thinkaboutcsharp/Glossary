@@ -19,4 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Realm" Version="4.1.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GlossaryRealmer\GlossaryRealmer.csproj" />
+  </ItemGroup>
 </Project>

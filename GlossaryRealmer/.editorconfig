@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS8618: Null 非許容フィールドが初期化されていません。
+dotnet_diagnostic.CS8618.severity = silent

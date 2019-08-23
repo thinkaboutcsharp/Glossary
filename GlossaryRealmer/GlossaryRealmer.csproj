@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -14,8 +14,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Poco\" />
-    <Folder Include="Scheme\" />
+    <None Remove="MasterDB\master.realm" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MasterDB\master.realm" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Realm" Version="4.1.0" />
