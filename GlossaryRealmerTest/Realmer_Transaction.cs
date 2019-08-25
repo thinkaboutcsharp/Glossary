@@ -55,8 +55,6 @@ namespace GlossaryRealmerTest
             }
         }
 
-        #endregion
-
         bool EqualsObject<T>(T expected, T actual)
         {
             var type = typeof(T);
@@ -73,29 +71,28 @@ namespace GlossaryRealmerTest
             return true;
         }
 
+        #endregion
+
         [Fact]
         public void Add()
         {
-            using (var realmer = GlossaryRealmer.GetRealmer())
-            {
-                var data = new WordStore()
-                {
-                    WordId = long.MinValue,
-                    DictionaryId = 0,
-                    Word = "TestData"
-                };
-                realmer.Add(data);
+            IGlossaryRealmer? realmer = GlossaryRealmer.GetRealmer();
 
-                var result = realmer.SelectAll<WordStore>();
-                realmer.Close();
+            var data = new WordStore(
+                long.MinValue,
+                0,
+                "TestData"
+            );
+            realmer.Add(data);
 
-                /*
-                Assert.Equal(1, (int)result.Count());
+            var destination = new List<WordStore>();
+            realmer.SelectAll(destination);
+            realmer.Close();
 
-                var selected = result.First();
-                Assert.True(EqualsObject(data, selected));
-                */
-            }
+            Assert.Equal(1, (int)destination.Count());
+
+            var selected = destination.First();
+            Assert.True(EqualsObject(data, selected));
         }
     }
 }

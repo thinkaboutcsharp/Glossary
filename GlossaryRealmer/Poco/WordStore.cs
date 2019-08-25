@@ -1,13 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Data;
+using Scheme = Realmer.Scheme;
 
 namespace Realmer.Poco
 {
-    public class WordStore
+    public readonly struct WordStore
     {
-        public long WordId { get; set; }
-        public int DictionaryId { get; set; }
-        public string Word { get; set; }
+        public readonly long WordId { get; }
+        public readonly int DictionaryId { get; }
+        public readonly string Word { get; }
+
+        public WordStore(long id, int dictionaryId, string word)
+        {
+            WordId = id;
+            DictionaryId = dictionaryId;
+            Word = word;
+        }
+
+        internal WordStore(Scheme.WordStore ro)
+        {
+            WordId = ro.WordId;
+            DictionaryId = ro.DictionaryId;
+            Word = ro.Word;
+        }
     }
 }

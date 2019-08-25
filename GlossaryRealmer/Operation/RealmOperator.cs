@@ -11,6 +11,7 @@ using System.Threading;
 using Realmer.Util;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace Realmer.Operation
 {
@@ -75,8 +76,11 @@ namespace Realmer.Operation
 
         public void Add<TPoco>(TPoco newRecord)
         {
-            var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
-            realm!.Write(() => AddRecord(realm!, native!));
+            realm!.Write(() =>
+            {
+                var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
+                AddRecord(realm!, native!);
+            });
         }
 
         public void AddRange<TPoco>(IEnumerable<TPoco> newRecords)
@@ -93,8 +97,11 @@ namespace Realmer.Operation
 
         public async Task AddAsync<TPoco>(TPoco newRecord)
         {
-            var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
-            await realm!.WriteAsync(asyncRealm => AddRecord(asyncRealm, native!));
+            await realm!.WriteAsync(asyncRealm =>
+            {
+                var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
+                AddRecord(asyncRealm, native!);
+            });
         }
 
         public async Task AddRangeAsync<TPoco>(IEnumerable<TPoco> newRecords)
@@ -109,54 +116,53 @@ namespace Realmer.Operation
             });
         }
 
-        public IEnumerable<TPoco> SelectAll<TPoco>()
+        public IEnumerable<TPoco> SelectAll<TPoco>(IList<TPoco> destination)
         {
             var records = SelectInternal<TPoco, object, object>(null, null, null);
-            var result = MapResult<TPoco>(records);
-            return result;
+            MapResult(destination, records!);
+            return destination;
         }
 
-        public IEnumerable<TPoco> Select<TPoco>(Func<TPoco, bool> condition)
+        public IEnumerable<TPoco> Select<TPoco>(IList<TPoco> destination, Func<dynamic, bool> condition)
         {
             var records = SelectInternal<TPoco, object, object>(condition, null, null);
-            var result = MapResult<TPoco>(records);
-            return result;
+            MapResult(destination, records!);
+            return destination;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKey>(Func<TPoco, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKey>(IList<TPoco> destination, Func<dynamic, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
         {
-            var records = SelectInternal<TPoco, TKey, object>(null, firstKey, null, firstDirection: firstDirection);
-            var result = MapResult<TPoco>(records);
-            return result;
+            var records = SelectInternal<TPoco, TKey, object>(null, firstKey, null, firstDirection);
+            MapResult(destination, records!);
+            return destination;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(Func<TPoco, TKeyFirst> firstKey, Func<TPoco, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(IList<TPoco> destination, Func<dynamic, TKeyFirst> firstKey, Func<dynamic, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
         {
             var records = SelectInternal<TPoco, TKeyFirst, TKeySecond>(null, firstKey, secondKey, firstDirection, secondDirection);
-            var result = MapResult<TPoco>(records);
-            return result;
+            MapResult(destination, records!);
+            return destination;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKey>(Func<TPoco, bool> condition, Func<TPoco, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKey>(IList<TPoco> destination, Func<dynamic, bool> condition, Func<dynamic, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
         {
-            var records = SelectInternal<TPoco, TKey, object>(condition, firstKey, null, firstDirection: firstDirection);
-            var result = MapResult<TPoco>(records);
-            return result;
+            var records = SelectInternal<TPoco, TKey, object>(condition, firstKey, null, firstDirection);
+            MapResult(destination, records!);
+            return destination;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(Func<TPoco, bool> condition, Func<TPoco, TKeyFirst> firstKey, Func<TPoco, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(IList<TPoco> destination, Func<dynamic, bool> condition, Func<dynamic, TKeyFirst> firstKey, Func<dynamic, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
         {
             var records = SelectInternal<TPoco, TKeyFirst, TKeySecond>(condition, firstKey, secondKey, firstDirection, secondDirection);
-            var result = MapResult<TPoco>(records);
-            return result;
+            MapResult(destination, records!);
+            return destination;
         }
 
+    #region Private
 
-        #region Private
+    #region Prepare
 
-        #region Prepare
-
-        Realm InitRealm()
+    Realm InitRealm()
         {
             PrepareConfiguration();
             config = ConfigRealm();
@@ -216,7 +222,6 @@ namespace Realmer.Operation
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap(typeof(Scheme.WordStore), typeof(Poco.WordStore));
                 cfg.CreateMap(typeof(Poco.WordStore), typeof(Scheme.WordStore));
             });
             var mapper = new Mapper(config);
@@ -247,47 +252,53 @@ namespace Realmer.Operation
 
         void AddRecord(Realm transactionRealm, RealmObject newRecord) => transactionRealm.Add(newRecord);
 
-        IEnumerable<dynamic> SelectInternal<TPoco, TKeyFirst, TKeySecond>(Func<TPoco, bool>? condition, Func<TPoco, TKeyFirst>? firstKey, Func<TPoco, TKeySecond>? secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
+        IEnumerable<dynamic> SelectInternal<TPoco, TFirstKey, TSecondKey>(
+            Func<dynamic, bool>? condition,
+            Func<dynamic, TFirstKey>? firstOrderKey,
+            Func<dynamic, TSecondKey>? secondOrderKey,
+            OrderBy firstDirection = OrderBy.Ascending,
+            OrderBy secondDirection = OrderBy.Ascending
+            )
         {
             var scheme = SchemeMapper.GetSchemeType<TPoco>();
-            var records = realm!.All(scheme.Name).AsEnumerable();
-            if (condition != null)
+            var records = realm!.All(scheme.Name).AsEnumerable() as IEnumerable<dynamic>;
+            if (condition != null) records = records.Where(condition);
+            if (firstOrderKey != null)
             {
-                records = records.Where(condition as Func<dynamic, bool>);
-            }
-            if (firstKey != null)
-            {
-                records = OrderResult(records, (firstKey as Func<dynamic, TKeyFirst>)!, firstDirection);
-            
-                if (secondKey != null)
+                records = firstDirection switch
                 {
-                    records = OrderResult(records, (secondKey as Func<dynamic, TKeySecond>)!, secondDirection);
+                    OrderBy.Ascending => records.OrderBy(firstOrderKey!),
+                    OrderBy.Descending => records.OrderByDescending(firstOrderKey!),
+                    _ => throw new ArgumentException("Not OrderBy member.", nameof(firstDirection))
+                };
+
+                if (secondOrderKey != null)
+                {
+                    var orderedRecords = records as IOrderedEnumerable<dynamic>;
+                    records = secondDirection switch
+                    {
+                        OrderBy.Ascending => orderedRecords.ThenBy(secondOrderKey!),
+                        OrderBy.Descending => orderedRecords.ThenByDescending(secondOrderKey),
+                        _ => throw new ArgumentException("Not OrderBy member.", nameof(secondDirection))
+                    };
                 }
             }
+
             return records;
         }
 
-        IEnumerable<dynamic> OrderResult<TKey>(IEnumerable<dynamic> records, Func<dynamic, TKey> key, OrderBy orderBy)
+        void MapResult<TPoco>(IList<TPoco> destination, IEnumerable<dynamic> source)
         {
-            switch (orderBy)
-            {
-                case OrderBy.Ascending:
-                    return records.OrderBy(key);
-                case OrderBy.Descending:
-                    return records.OrderByDescending(key);
-                default:
-                    return records;
-            }
-        }
+            destination.Clear();
+            if (source.Count() == 0) return;
 
-        IList<TPoco> MapResult<TPoco>(IEnumerable<dynamic> source)
-        {
-            var result = new List<TPoco>();
+            var sourceType = source.First().GetType();
+            var cons = typeof(TPoco).GetConstructor(new Type[] { sourceType });
             foreach (var record in source)
             {
-                result.Add(mapper.Map<TPoco>(record));
+                var pocoObj = (TPoco)cons.Invoke(new object[] { record });
+                destination.Add(pocoObj);
             }
-            return result;
         }
 
         #endregion //Transaction
