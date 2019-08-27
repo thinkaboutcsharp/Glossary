@@ -1,5 +1,5 @@
 using Realmer;
-using Realms;
+using Realmer.Poco;
 using System;
 using System.IO;
 using Xunit;
@@ -7,78 +7,37 @@ using Xunit.Abstractions;
 
 namespace GlossaryRealmerTest
 {
-    public class Realmer_IO : IDisposable
+    public class Realmer_IO : Spells.SetupAndTeardown
     {
-        ITestOutputHelper output;
-        string appPath;
-        string filePath;
-
-        #region Spells
-
-        public Realmer_IO(ITestOutputHelper output)
-        {
-            this.output = output;
-
-            var folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            appPath = Path.Combine(folder, "Glossary@TACFilozofio");
-            filePath = Path.Combine(appPath, "glossary@tacfilozofio.realm");
-
-            ClearTestDB();
-        }
-
-        public void Dispose()
-        {
-            ClearTestDB();
-        }
-
-        void ClearTestDB()
-        {
-            void ClearDirectory(string dir)
-            {
-                foreach (var child in Directory.EnumerateDirectories(dir))
-                {
-                    ClearDirectory(child);
-                    Directory.Delete(child);
-                }
-                foreach (var file in Directory.EnumerateFiles(dir)) File.Delete(file);
-            }
-
-            if (Directory.Exists(appPath))
-            {
-                Realm.DeleteRealm(new RealmConfiguration(filePath));
-                ClearDirectory(appPath);
-            }
-        }
-
-        #endregion
+        public Realmer_IO(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public void CreateFile()
         {
-            var realmer = GlossaryRealmer.GetRealmer();
+            Setup();
 
             Assert.True(File.Exists(filePath));
 
-            realmer.Close();
+            Dispose();
         }
 
-        [Fact]
+        //[Fact]
         public void CreateFileWithDirectory()
         {
-            Directory.Delete(appPath);
+            realmer.Dispose();
 
-            var realmer = GlossaryRealmer.GetRealmer();
+            GlossaryRealmer.Uninstall();
+
+            realmer.Open();
 
             Assert.True(File.Exists(filePath));
 
             realmer.Close();
         }
 
-        [Fact]
+        //[Fact]
         public void BackupFileOpening()
         {
-            var realmer = GlossaryRealmer.GetRealmer();
-
             Action test = () => realmer.Backup("BkTest");
             var ex = Assert.Throws<InvalidOperationException>(test);
             Assert.Equal("Realm is open. Can't do backup.", ex.Message);
@@ -89,24 +48,30 @@ namespace GlossaryRealmerTest
         [Fact]
         public void BackupFile()
         {
-            var realmer = GlossaryRealmer.GetRealmer();
+            Setup();
+
             realmer.Close();
 
             realmer.Backup("BkTest");
 
             Assert.True(File.Exists(filePath + "_@BkTest@_"));
+
+            Dispose();
         }
 
         [Fact]
         public void Uninstall()
         {
-            var realmer = GlossaryRealmer.GetRealmer();
+            Setup();
+
             realmer.Close();
             realmer.Backup("BkTest");
 
-            realmer.Uninstall();
+            GlossaryRealmer.Uninstall();
 
             Assert.False(Directory.Exists(appPath));
+
+            Dispose();
         }
     }
 }

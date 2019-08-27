@@ -12,6 +12,8 @@ using Realmer.Util;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Reflection;
+using Realms.Dynamic;
 
 namespace Realmer.Operation
 {
@@ -24,17 +26,24 @@ namespace Realmer.Operation
         const string BackupKeyFormat = "{0}_@{1}@_";
 
         Realm? realm;
-        RealmConfiguration config;
-        string appPath;
-        string filePath;
+        static RealmConfiguration config;
+        static string appPath;
+        static string filePath;
 
         Mapper mapper;
 
-        Action disposeAction;
-
-        internal RealmOperator(Action disposeAction)
+        internal static void Uninstall()
         {
-            this.disposeAction = disposeAction;
+            if (Directory.Exists(appPath))
+            {
+                Realm.DeleteRealm(config);
+                foreach (var file in Directory.EnumerateFiles(appPath)) File.Delete(file);
+                Directory.Delete(appPath);
+            }
+        }
+
+        internal RealmOperator()
+        {
             realm = InitRealm();
             mapper = CreateMap();
         }
@@ -42,12 +51,13 @@ namespace Realmer.Operation
         public void Dispose()
         {
             Close();
-            disposeAction();
         }
 
         public void Open()
         {
             Close();
+            PrepareConfiguration();
+            CheckDatabaseFile();
             realm = Realm.GetInstance(config);
         }
 
@@ -63,15 +73,6 @@ namespace Realmer.Operation
 
             var backupPath = GetBackupPath(key);
             CopyToBackup(backupPath);
-        }
-
-        public void Uninstall()
-        {
-            Close();
-
-            Realm.DeleteRealm(config);
-            foreach (var file in Directory.EnumerateFiles(appPath)) File.Delete(file);
-            Directory.Delete(appPath);
         }
 
         public void Add<TPoco>(TPoco newRecord)
@@ -158,11 +159,11 @@ namespace Realmer.Operation
             return destination;
         }
 
-    #region Private
+        #region Private
 
-    #region Prepare
+        #region Prepare
 
-    Realm InitRealm()
+        Realm InitRealm()
         {
             PrepareConfiguration();
             config = ConfigRealm();
@@ -293,10 +294,11 @@ namespace Realmer.Operation
             if (source.Count() == 0) return;
 
             var sourceType = source.First().GetType();
-            var cons = typeof(TPoco).GetConstructor(new Type[] { sourceType });
+            var ctor = typeof(TPoco).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { sourceType }, null);
+
             foreach (var record in source)
             {
-                var pocoObj = (TPoco)cons.Invoke(new object[] { record });
+                var pocoObj = (TPoco)ctor.Invoke(new object[] { record });
                 destination.Add(pocoObj);
             }
         }

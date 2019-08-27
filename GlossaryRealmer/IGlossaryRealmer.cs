@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Realms;
+using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Realmer
@@ -12,7 +11,6 @@ namespace Realmer
         void Open();
         void Close();
         void Backup(string key);
-        void Uninstall();
 
         void Add<TPoco>(TPoco newRecord);
         void AddRange<TPoco>(IEnumerable<TPoco> newRecords);

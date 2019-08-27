@@ -7,26 +7,32 @@ using Realmer.Operation;
 
 namespace Realmer
 {
-    public class GlossaryRealmer : IDisposable
+    public class GlossaryRealmer
     {
+        static GlossaryRealmer? instance;
         IGlossaryRealmer? ope;
 
         private GlossaryRealmer()
         {
-            ope = new RealmOperator(() => Dispose());
-        }
-
-        public void Dispose()
-        {
-            //It is necessary that release references related to Realm even if realm is disposed.
-            //It seems some static objects related to Realm are left.
-            ope = null;
+            ope = new RealmOperator();
         }
 
         public static IGlossaryRealmer GetRealmer()
         {
-            var instance = new GlossaryRealmer();
+            if (instance ==  null) instance = new GlossaryRealmer();
             return instance.ope!;
+        }
+
+        public static void Dispose()
+        {
+            instance?.ope?.Dispose();
+            instance = null;
+        }
+
+        public static void Uninstall()
+        {
+            Dispose();
+            RealmOperator.Uninstall();
         }
     }
 }
