@@ -14,9 +14,11 @@ namespace GlossaryRealmerTest
     {
         public Realmer_Transaction(ITestOutputHelper output) : base(output) { }
 
-        //[Fact]
+        [Fact]
         public void Add()
         {
+            Setup();
+
             var data = new WordStore(
                 long.MinValue,
                 0,
@@ -24,7 +26,6 @@ namespace GlossaryRealmerTest
             );
             realmer.Add(data);
 
-            /*
             var destination = new List<WordStore>();
             realmer.SelectAll(destination);
             realmer.Close();
@@ -32,34 +33,9 @@ namespace GlossaryRealmerTest
             Assert.Equal(1, (int)destination.Count());
 
             var selected = destination.First();
-            Assert.True(EqualsObject(data, selected));
-            */
-        }
-        [Fact]
-        public void CreateFileWithDirectory()
-        {
-            Setup();
-
-            GlossaryRealmer.Uninstall();
-
-            realmer.Open();
-
-            Assert.True(File.Exists(filePath));
+            Assert.True(comparer.EqualsObject(data, selected));
 
             Dispose();
         }
-
-        [Fact]
-        public void BackupFileOpening()
-        {
-            Setup();
-
-            Action test = () => realmer.Backup("BkTest");
-            var ex = Assert.Throws<InvalidOperationException>(test);
-            Assert.Equal("Realm is open. Can't do backup.", ex.Message);
-
-            Dispose();
-        }
-
     }
 }

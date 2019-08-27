@@ -21,9 +21,11 @@ namespace GlossaryRealmerTest
             Dispose();
         }
 
-        //[Fact]
+        [Fact]
         public void CreateFileWithDirectory()
         {
+            Setup();
+
             realmer.Dispose();
 
             GlossaryRealmer.Uninstall();
@@ -33,16 +35,22 @@ namespace GlossaryRealmerTest
             Assert.True(File.Exists(filePath));
 
             realmer.Close();
+
+            Dispose();
         }
 
-        //[Fact]
+        [Fact]
         public void BackupFileOpening()
         {
+            Setup();
+
             Action test = () => realmer.Backup("BkTest");
             var ex = Assert.Throws<InvalidOperationException>(test);
             Assert.Equal("Realm is open. Can't do backup.", ex.Message);
 
             realmer.Close();
+
+            Dispose();
         }
 
         [Fact]

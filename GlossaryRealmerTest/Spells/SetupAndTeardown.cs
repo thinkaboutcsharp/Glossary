@@ -16,6 +16,8 @@ namespace GlossaryRealmerTest.Spells
 
         protected SetupAndTeardown(ITestOutputHelper output)
         {
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+
             this.output = output;
 
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
@@ -36,7 +38,6 @@ namespace GlossaryRealmerTest.Spells
         {
             realmer.Dispose();
             GlossaryRealmer.Uninstall();
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
         }
     }
 }
