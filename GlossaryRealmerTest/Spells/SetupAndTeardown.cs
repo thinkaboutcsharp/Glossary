@@ -6,37 +6,24 @@ using System.Runtime.CompilerServices;
 
 namespace GlossaryRealmerTest.Spells
 {
-    abstract public class SetupAndTeardown 
+    public class SetupAndTeardown : IDisposable
     {
-        protected ITestOutputHelper output;
-        protected string appPath;
-        protected string filePath;
-        protected IGlossaryRealmer realmer;
-        private protected Comparers comparer;
+        internal string appPath;
+        internal string filePath;
+        internal IGlossaryRealmer realmer;
 
-        protected SetupAndTeardown(ITestOutputHelper output)
+        public SetupAndTeardown()
         {
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-
-            this.output = output;
-
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             appPath = Path.Combine(folder, "Glossary@TACFilozofio");
             filePath = Path.Combine(appPath, "glossary@tacfilozofio.realm");
 
-            comparer = new Comparers(output);
-        }
-
-        protected void Setup([CallerMemberName] string testName = "")
-        {
-            output.WriteLine($"TestCase:{testName}");
-            GC.WaitForFullGCComplete();
+            //GlossaryRealmer.Uninstall();
             realmer = GlossaryRealmer.GetRealmer();
         }
 
-        protected void Dispose()
+        public void Dispose()
         {
-            realmer.Dispose();
             GlossaryRealmer.Uninstall();
         }
     }

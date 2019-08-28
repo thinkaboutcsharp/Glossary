@@ -7,79 +7,60 @@ using Xunit.Abstractions;
 
 namespace GlossaryRealmerTest
 {
-    public class Realmer_IO : Spells.SetupAndTeardown
+    public class Realmer_IO : IClassFixture<Spells.SetupAndTeardown>
     {
-        public Realmer_IO(ITestOutputHelper output) : base(output) { }
+        ITestOutputHelper output;
+        Spells.SetupAndTeardown helper;
 
-        [Fact]
-        public void CreateFile()
+        IGlossaryRealmer realmer;
+        string appPath;
+        string filePath;
+
+        public Realmer_IO(Spells.SetupAndTeardown helper, ITestOutputHelper output)
         {
-            Setup();
+            this.helper = helper;
+            this.output = output;
 
-            Assert.True(File.Exists(filePath));
-
-            Dispose();
-        }
-
-        [Fact]
-        public void CreateFileWithDirectory()
-        {
-            Setup();
-
-            realmer.Dispose();
-
-            GlossaryRealmer.Uninstall();
-
-            realmer.Open();
-
-            Assert.True(File.Exists(filePath));
-
-            realmer.Close();
-
-            Dispose();
+            realmer = helper.realmer;
+            appPath = helper.appPath;
+            filePath = helper.filePath;
         }
 
         [Fact]
         public void BackupFileOpening()
         {
-            Setup();
-
             Action test = () => realmer.Backup("BkTest");
             var ex = Assert.Throws<InvalidOperationException>(test);
             Assert.Equal("Realm is open. Can't do backup.", ex.Message);
 
             realmer.Close();
-
-            Dispose();
         }
 
         [Fact]
         public void BackupFile()
         {
-            Setup();
-
             realmer.Close();
 
             realmer.Backup("BkTest");
 
             Assert.True(File.Exists(filePath + "_@BkTest@_"));
-
-            Dispose();
         }
 
         [Fact]
         public void Uninstall()
         {
-            Setup();
-
             realmer.Close();
             realmer.Backup("BkTest");
 
             GlossaryRealmer.Uninstall();
 
             Assert.False(Directory.Exists(appPath));
+        }
 
-            Dispose();
+        [Fact]
+        public void CreateFile()
+        {
+            Assert.True(File.Exists(filePath));
         }
     }
 }

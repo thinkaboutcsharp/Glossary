@@ -27,20 +27,14 @@ namespace Realmer.Operation
 
         Realm? realm;
         static RealmConfiguration config;
+
         static string appPath;
         static string filePath;
 
-        Mapper mapper;
+        public string AppPath { get => appPath; }
+        public string FilePath { get => filePath; }
 
-        internal static void Uninstall()
-        {
-            if (Directory.Exists(appPath))
-            {
-                Realm.DeleteRealm(config);
-                foreach (var file in Directory.EnumerateFiles(appPath)) File.Delete(file);
-                Directory.Delete(appPath);
-            }
-        }
+        Mapper mapper;
 
         internal RealmOperator()
         {
@@ -241,10 +235,7 @@ namespace Realmer.Operation
 
         void CopyToBackup(string backupPath)
         {
-            using (var current = new FileStream(filePath, FileMode.Open))
-            {
-                CopyOriginalDatabase(current, backupPath);
-            }
+            File.Copy(filePath, backupPath);
         }
 
         #endregion //Backup

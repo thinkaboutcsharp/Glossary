@@ -8,6 +8,9 @@ namespace Realmer
 {
     public interface IGlossaryRealmer : IDisposable
     {
+        string AppPath { get; }
+        string FilePath { get; }
+
         void Open();
         void Close();
         void Backup(string key);
