@@ -15,12 +15,5 @@ namespace Realmer.Poco
             DictionaryId = dictionaryId;
             Word = word;
         }
-
-        internal WordStore(Scheme.WordStore ro)
-        {
-            WordId = ro.WordId;
-            DictionaryId = ro.DictionaryId;
-            Word = ro.Word;
-        }
     }
 }

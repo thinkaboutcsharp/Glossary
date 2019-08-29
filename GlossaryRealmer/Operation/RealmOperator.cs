@@ -1,19 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net.Http.Headers;
-using AutoMapper;
-using Realmer.Scheme;
-using Realms;
-using Scheme = Realmer.Scheme;
-using Poco = Realmer.Poco;
-using System.Collections.Generic;
-using System.Threading;
+﻿using AutoMapper;
 using Realmer.Util;
+using Realms;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 using System.Reflection;
-using Realms.Dynamic;
+using System.Threading.Tasks;
 
 namespace Realmer.Operation
 {
@@ -111,46 +104,46 @@ namespace Realmer.Operation
             });
         }
 
-        public IEnumerable<TPoco> SelectAll<TPoco>(IList<TPoco> destination)
+        public IEnumerable<TPoco> SelectAll<TPoco>()
         {
             var records = SelectInternal<TPoco, object, object>(null, null, null);
-            MapResult(destination, records!);
-            return destination;
+            var result = MapResult<TPoco>(records!);
+            return result;
         }
 
-        public IEnumerable<TPoco> Select<TPoco>(IList<TPoco> destination, Func<dynamic, bool> condition)
+        public IEnumerable<TPoco> Select<TPoco>(Func<dynamic, bool> condition)
         {
             var records = SelectInternal<TPoco, object, object>(condition, null, null);
-            MapResult(destination, records!);
-            return destination;
+            var result = MapResult<TPoco>(records!);
+            return result;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKey>(IList<TPoco> destination, Func<dynamic, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKey>(Func<dynamic, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
         {
             var records = SelectInternal<TPoco, TKey, object>(null, firstKey, null, firstDirection);
-            MapResult(destination, records!);
-            return destination;
+            var result = MapResult<TPoco>(records!);
+            return result;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(IList<TPoco> destination, Func<dynamic, TKeyFirst> firstKey, Func<dynamic, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(Func<dynamic, TKeyFirst> firstKey, Func<dynamic, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
         {
             var records = SelectInternal<TPoco, TKeyFirst, TKeySecond>(null, firstKey, secondKey, firstDirection, secondDirection);
-            MapResult(destination, records!);
-            return destination;
+            var result = MapResult<TPoco>(records!);
+            return result;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKey>(IList<TPoco> destination, Func<dynamic, bool> condition, Func<dynamic, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKey>(Func<dynamic, bool> condition, Func<dynamic, TKey> firstKey, OrderBy firstDirection = OrderBy.Ascending)
         {
             var records = SelectInternal<TPoco, TKey, object>(condition, firstKey, null, firstDirection);
-            MapResult(destination, records!);
-            return destination;
+            var result = MapResult<TPoco>(records!);
+            return result;
         }
 
-        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(IList<TPoco> destination, Func<dynamic, bool> condition, Func<dynamic, TKeyFirst> firstKey, Func<dynamic, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
+        public IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(Func<dynamic, bool> condition, Func<dynamic, TKeyFirst> firstKey, Func<dynamic, TKeySecond> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending)
         {
             var records = SelectInternal<TPoco, TKeyFirst, TKeySecond>(condition, firstKey, secondKey, firstDirection, secondDirection);
-            MapResult(destination, records!);
-            return destination;
+            var result = MapResult<TPoco>(records!);
+            return result;
         }
 
         #region Private
@@ -279,19 +272,24 @@ namespace Realmer.Operation
             return records;
         }
 
-        void MapResult<TPoco>(IList<TPoco> destination, IEnumerable<dynamic> source)
+        IList<TPoco> MapResult<TPoco>(IEnumerable<dynamic> source)
         {
-            destination.Clear();
-            if (source.Count() == 0) return;
+            if (source.Count() == 0) return new List<TPoco>();
+
+            //var sourceType = source.First().GetType();
+            //var ctor = typeof(TPoco).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { sourceType }, null);
+
+            //var result = new List<TPoco>();
+            //foreach (var record in source)
+            //{
+            //    var pocoObj = (TPoco)ctor.Invoke(new object[] { record });
+            //    result.Add(pocoObj);
+            //}
 
             var sourceType = source.First().GetType();
-            var ctor = typeof(TPoco).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { sourceType }, null);
-
-            foreach (var record in source)
-            {
-                var pocoObj = (TPoco)ctor.Invoke(new object[] { record });
-                destination.Add(pocoObj);
-            }
+            var result = new List<TPoco>();
+            foreach (var record in source) result.Add(mapper.Map<TPoco>(record));
+            return result;
         }
 
         #endregion //Transaction

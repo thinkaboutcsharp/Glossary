@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
+using System.Linq;
 using Xunit.Abstractions;
 
 namespace GlossaryRealmerTest.Spells
@@ -15,7 +15,31 @@ namespace GlossaryRealmerTest.Spells
         internal bool EqualsObject<T>(T expected, T actual)
         {
             var type = typeof(T);
-            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var result = EqualsAllPublicProperties(expected, actual, properties);
+            return result;
+        }
+
+        internal bool EqualsObject<T>(IEnumerable<T> expected, IEnumerable<T> actual)
+        {
+            if (expected.Count() != actual.Count())
+            {
+                output.WriteLine($"Different Length;\n  Expected: {expected.Count()}\n  Actual  : {actual.Count()}");
+                return false;
+            }
+
+            var type = typeof(T);
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            for (var i = 0; i < expected.Count(); i++)
+            {
+                if (!EqualsAllPublicProperties(expected.ElementAt(i), actual.ElementAt(i), properties)) return false;
+            }
+            return true;
+        }
+
+        bool EqualsAllPublicProperties<T>(T expected, T actual, IEnumerable<PropertyInfo> properties)
+        {
+            foreach (var property in properties)
             {
                 var expectedValue = property.GetValue(expected);
                 var actualValue = property.GetValue(actual);
@@ -27,6 +51,5 @@ namespace GlossaryRealmerTest.Spells
             }
             return true;
         }
-
     }
 }

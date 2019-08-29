@@ -7,30 +7,17 @@ using Xunit.Abstractions;
 
 namespace GlossaryRealmerTest
 {
-    public class Realmer_IO : IClassFixture<Spells.SetupAndTeardown>
+    [Collection("Realm Test Collection")]
+    public class Realmer_IO : Spells.SetupAndTeardown
     {
-        ITestOutputHelper output;
-        Spells.SetupAndTeardown helper;
-
-        IGlossaryRealmer realmer;
-        string appPath;
-        string filePath;
-
-        public Realmer_IO(Spells.SetupAndTeardown helper, ITestOutputHelper output)
+        public Realmer_IO(ITestOutputHelper output) : base(output)
         {
-            this.helper = helper;
-            this.output = output;
-
-            realmer = helper.realmer;
-            appPath = helper.appPath;
-            filePath = helper.filePath;
         }
 
         [Fact]
         public void BackupFileOpening()
         {
-            Action test = () => realmer.Backup("BkTest");
-            var ex = Assert.Throws<InvalidOperationException>(test);
+            var ex = Assert.Throws<InvalidOperationException>(() => realmer.Backup("BkTest"));
             Assert.Equal("Realm is open. Can't do backup.", ex.Message);
 
             realmer.Close();
@@ -60,7 +47,21 @@ namespace GlossaryRealmerTest
         [Fact]
         public void CreateFile()
         {
+            Assert.True(File.Exists(filePath), $"actual  :{realmer.FilePath}\nexpected:{filePath}");
+        }
+
+        [Fact]
+        public void CreateFileWithDirectory()
+        {
+            realmer.Dispose();
+
+            GlossaryRealmer.Uninstall();
+
+            realmer.Open();
+
             Assert.True(File.Exists(filePath));
+
+            realmer.Close();
         }
     }
 }

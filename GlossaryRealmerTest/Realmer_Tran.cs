@@ -10,59 +10,56 @@ using System.Reflection;
 
 namespace GlossaryRealmerTest
 {
-    public class Realmer_Tran : IClassFixture<Spells.SetupAndTeardown>
+    [Collection("Realm Test Collection")]
+    public class Realmer_Tran : Spells.SetupAndTeardown
     {
-        ITestOutputHelper output;
-        Spells.SetupAndTeardown helper;
-
-        IGlossaryRealmer realmer;
-        string appPath;
-        string filePath;
-
-        public Realmer_Tran(Spells.SetupAndTeardown helper, ITestOutputHelper output)
+        public Realmer_Tran(ITestOutputHelper output) : base(output)
         {
-            this.helper = helper;
-            this.output = output;
-
-            realmer = helper.realmer;
-            appPath = helper.appPath;
-            filePath = helper.filePath;
-        }
-
-        [Fact]
-        public void CreateFileWithDirectory()
-        {
-            realmer.Dispose();
-
-            GlossaryRealmer.Uninstall();
-
-            realmer.Open();
-
-            Assert.True(File.Exists(filePath));
-
-            realmer.Close();
         }
 
         [Fact]
         public void Add()
         {
-            //var data = new WordStore(
-            //    long.MinValue,
-            //    0,
-            //    "TestData"
-            //);
-            //realmer.Add(data);
+            var data = new WordStore(
+                long.MinValue,
+                0,
+                "TestData"
+            );
+            realmer.Add(data);
 
-            /*
-            var destination = new List<WordStore>();
-            realmer.SelectAll(destination);
+            var destination = realmer.SelectAll<WordStore>();
             realmer.Close();
 
             Assert.Equal(1, (int)destination.Count());
 
             var selected = destination.First();
             Assert.True(comparer.EqualsObject(data, selected));
-            */
+        }
+
+        [Fact]
+        public void AddRange()
+        {
+            var data = new[]
+            {
+                new WordStore(
+                    long.MinValue,
+                    0,
+                    "TestDataA"
+                ),
+                new WordStore(
+                    long.MinValue + 1,
+                    0,
+                    "TestDataB"
+                )
+            };
+            realmer.AddRange(data);
+
+            var destination = realmer.SelectAll<WordStore>();
+            realmer.Close();
+
+            Assert.Equal(2, (int)destination.Count());
+
+            Assert.True(comparer.EqualsObject(data, destination));
         }
     }
 }
