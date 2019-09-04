@@ -71,7 +71,7 @@ namespace Realmer.Operation
             });
         }
 
-        public void AddRange<TPoco>(IList<TPoco> newRecords)
+        public void AddRange<TPoco>(IEnumerable<TPoco> newRecords)
         {
             realm!.Write(() =>
             {
@@ -85,11 +85,11 @@ namespace Realmer.Operation
 
         public void Update<TPoco>(TPoco record)
         {
-            var singleList = new List<TPoco>() { record };
+            var singleList = new TPoco[] { record };
             UpdateRange(singleList);
         }
 
-        public void UpdateRange<TPoco>(IList<TPoco> records)
+        public void UpdateRange<TPoco>(IEnumerable<TPoco> records)
         {
             var schemeType = SchemeMapper.GetSchemeType<TPoco>();
             var allScheme = realm!.All(schemeType.Name);
@@ -105,23 +105,27 @@ namespace Realmer.Operation
 
         public void Delete<TPoco>(TPoco record)
         {
-            DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc(record));
+            var singleList = new TPoco[] { record };
+            DeleteRecord(singleList);
         }
 
         public void Delete<TPoco>(long id)
         {
-            DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc<TPoco>(id));
+            var singleList = new long[] { id };
+            DeleteRecord<TPoco>(singleList);
         }
 
-        public void DeleteRange<TPoco>(IList<TPoco> records)
+        public void DeleteRange<TPoco>(IEnumerable<TPoco> records)
         {
-            foreach (var record in records) DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc(record));
+            DeleteRecord(records);
         }
 
-        public void DeleteRange<TPoco>(IList<long> ids)
+        public void DeleteRange<TPoco>(IEnumerable<long> ids)
         {
-            foreach (var id in ids) DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc<TPoco>(id));
+            DeleteRecord<TPoco>(ids);
         }
+
+        #region Select
 
         public IEnumerable<TPoco> SelectAll<TPoco>()
         {
@@ -164,6 +168,8 @@ namespace Realmer.Operation
             var result = MapResult<TPoco>(records!);
             return result;
         }
+
+        #endregion
 
         #region Private
 
@@ -254,14 +260,23 @@ namespace Realmer.Operation
 
         #region Transaction
 
-        void DeleteSingleRecord<TPoco>(Func<dynamic, bool> whereClause)
+        void DeleteRecord<TPoco>(IEnumerable<long> records)
         {
             var schemeType = SchemeMapper.GetSchemeType<TPoco>();
-            var targetRecord = realm!.All(schemeType.Name).Where(whereClause).Single();
+            var targetRecordAll = realm!.All(schemeType.Name);
             realm!.Write(() =>
             {
-                realm!.Remove(targetRecord);
+                foreach (var key in records)
+                {
+                    var targetRecord = targetRecordAll.Where(SchemeMapper.GetPKFunc<TPoco>(key)).Single();
+                    realm!.Remove(targetRecord);
+                }
             });
+        }
+
+        void DeleteRecord<TPoco>(IEnumerable<TPoco> records)
+        {
+            DeleteRecord<TPoco>(SchemeMapper.GetPkEnum(records));
         }
 
         IEnumerable<dynamic> SelectInternal<TPoco, TFirstKey, TSecondKey>(

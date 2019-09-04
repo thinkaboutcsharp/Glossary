@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Realmer.Util
 {
@@ -24,6 +26,14 @@ namespace Realmer.Util
                 nameof(Poco.WordStore) => nameof(Poco.WordStore.WordId),
                 _ => ""
             };
+        }
+
+        static internal IEnumerable<long> GetPkEnum<TPoco>(IEnumerable<TPoco> obj)
+        {
+            var pkName = GetPKName<TPoco>();
+            var dynamicRecord = (dynamic)obj!;
+            long pk = (long)dynamicRecord[pkName];
+            yield return pk;
         }
 
         static internal Func<dynamic, bool> GetPKFunc<TPoco>(TPoco record)

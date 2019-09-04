@@ -16,13 +16,13 @@ namespace Realmer
         void Backup(string key);
 
         void Add<TPoco>(TPoco newRecord);
-        void AddRange<TPoco>(IList<TPoco> newRecords);
+        void AddRange<TPoco>(IEnumerable<TPoco> newRecords);
         void Update<TPoco>(TPoco record);
-        void UpdateRange<TPoco>(IList<TPoco> records);
+        void UpdateRange<TPoco>(IEnumerable<TPoco> records);
         void Delete<TPoco>(TPoco record);
         void Delete<TPoco>(long id);
-        void DeleteRange<TPoco>(IList<TPoco> records);
-        void DeleteRange<TPoco>(IList<long> ids);
+        void DeleteRange<TPoco>(IEnumerable<TPoco> records);
+        void DeleteRange<TPoco>(IEnumerable<long> ids);
 
         //Async write has risk, throws 'Realm is accessed by incorrect thread', so sealed.
         //Task AddAsync<TPoco>(TPoco newRecord);
