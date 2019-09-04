@@ -67,41 +67,60 @@ namespace Realmer.Operation
             realm!.Write(() =>
             {
                 var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
-                AddRecord(realm!, native!);
+                realm!.Add(native!);
             });
         }
 
-        public void AddRange<TPoco>(IEnumerable<TPoco> newRecords)
+        public void AddRange<TPoco>(IList<TPoco> newRecords)
         {
             realm!.Write(() =>
             {
                 foreach (var newRecord in newRecords)
                 {
                     var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
-                    AddRecord(realm!, native!);
+                    realm!.Add(native!);
                 }
             });
         }
 
-        public async Task AddAsync<TPoco>(TPoco newRecord)
+        public void Update<TPoco>(TPoco record)
         {
-            await realm!.WriteAsync(asyncRealm =>
-            {
-                var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
-                AddRecord(asyncRealm, native!);
-            });
+            var singleList = new List<TPoco>() { record };
+            UpdateRange(singleList);
         }
 
-        public async Task AddRangeAsync<TPoco>(IEnumerable<TPoco> newRecords)
+        public void UpdateRange<TPoco>(IList<TPoco> records)
         {
-            await realm!.WriteAsync(asyncRealm =>
+            var schemeType = SchemeMapper.GetSchemeType<TPoco>();
+            var allScheme = realm!.All(schemeType.Name);
+            realm!.Write(() =>
             {
-                foreach (var newRecord in newRecords)
+                foreach (var record in records)
                 {
-                    var native = mapper.Map(newRecord, typeof(TPoco), SchemeMapper.GetSchemeType<TPoco>()) as RealmObject;
-                    AddRecord(asyncRealm, native!);
+                    var targetRecord = allScheme.Where(SchemeMapper.GetPKFunc(record)).Single();
+                    mapper.Map(record, targetRecord, typeof(TPoco), schemeType);
                 }
             });
+        }
+
+        public void Delete<TPoco>(TPoco record)
+        {
+            DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc(record));
+        }
+
+        public void Delete<TPoco>(long id)
+        {
+            DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc<TPoco>(id));
+        }
+
+        public void DeleteRange<TPoco>(IList<TPoco> records)
+        {
+            foreach (var record in records) DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc(record));
+        }
+
+        public void DeleteRange<TPoco>(IList<long> ids)
+        {
+            foreach (var id in ids) DeleteSingleRecord<TPoco>(SchemeMapper.GetPKFunc<TPoco>(id));
         }
 
         public IEnumerable<TPoco> SelectAll<TPoco>()
@@ -235,7 +254,15 @@ namespace Realmer.Operation
 
         #region Transaction
 
-        void AddRecord(Realm transactionRealm, RealmObject newRecord) => transactionRealm.Add(newRecord);
+        void DeleteSingleRecord<TPoco>(Func<dynamic, bool> whereClause)
+        {
+            var schemeType = SchemeMapper.GetSchemeType<TPoco>();
+            var targetRecord = realm!.All(schemeType.Name).Where(whereClause).Single();
+            realm!.Write(() =>
+            {
+                realm!.Remove(targetRecord);
+            });
+        }
 
         IEnumerable<dynamic> SelectInternal<TPoco, TFirstKey, TSecondKey>(
             Func<dynamic, bool>? condition,
@@ -276,19 +303,15 @@ namespace Realmer.Operation
         {
             if (source.Count() == 0) return new List<TPoco>();
 
-            //var sourceType = source.First().GetType();
-            //var ctor = typeof(TPoco).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { sourceType }, null);
-
-            //var result = new List<TPoco>();
-            //foreach (var record in source)
-            //{
-            //    var pocoObj = (TPoco)ctor.Invoke(new object[] { record });
-            //    result.Add(pocoObj);
-            //}
-
             var sourceType = source.First().GetType();
+            var ctor = typeof(TPoco).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { sourceType }, null);
+
             var result = new List<TPoco>();
-            foreach (var record in source) result.Add(mapper.Map<TPoco>(record));
+            foreach (var record in source)
+            {
+                var pocoObj = (TPoco)ctor.Invoke(new object[] { record });
+                result.Add(pocoObj);
+            }
             return result;
         }
 

@@ -7,6 +7,8 @@ using Xunit.Abstractions;
 using Realmer;
 using Realmer.Poco;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace GlossaryRealmerTest
 {
