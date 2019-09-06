@@ -5,7 +5,7 @@ namespace Realmer.Poco
 {
     public readonly struct WordStore
     {
-        public readonly string PKName => nameof(WordId);
+        public readonly long PK => WordId;
 
         public readonly long WordId { get; }
         public readonly int DictionaryId { get; }

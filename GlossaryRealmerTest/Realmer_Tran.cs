@@ -63,5 +63,36 @@ namespace GlossaryRealmerTest
 
             Assert.True(comparer.EqualsObject(data, destination));
         }
+
+        [Fact]
+        public void Update()
+        {
+            var data = new[]
+            {
+                new WordStore(
+                    long.MinValue,
+                    0,
+                    "TestDataA"
+                ),
+                new WordStore(
+                    long.MinValue + 1,
+                    0,
+                    "TestDataB"
+                )
+            };
+            realmer.AddRange(data);
+
+            var newData = new WordStore(long.MinValue + 1, 1, "TestDataB");
+
+            realmer.Update(newData);
+            data[1] = newData;
+
+            var destination = realmer.SelectAll<WordStore>();
+            realmer.Close();
+
+            Assert.Equal(2, (int)destination.Count());
+
+            Assert.True(comparer.EqualsObject(data, destination));
+        }
     }
 }

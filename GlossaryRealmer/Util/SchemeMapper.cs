@@ -17,30 +17,20 @@ namespace Realmer.Util
             };
         }
 
-        static string GetPKName<TPoco>()
+        static internal IEnumerable<long> GetPkEnum<TPoco>(IEnumerable<TPoco> objEnum)
         {
-            var name = typeof(TPoco).Name;
-
-            return name switch
+            foreach (var obj in objEnum)
             {
-                nameof(Poco.WordStore) => nameof(Poco.WordStore.WordId),
-                _ => ""
-            };
-        }
-
-        static internal IEnumerable<long> GetPkEnum<TPoco>(IEnumerable<TPoco> obj)
-        {
-            var pkName = GetPKName<TPoco>();
-            var dynamicRecord = (dynamic)obj!;
-            long pk = (long)dynamicRecord[pkName];
-            yield return pk;
+                var dynamicRecord = (dynamic)obj!;
+                long pk = dynamicRecord.PK;
+                yield return pk;
+            }
         }
 
         static internal Func<dynamic, bool> GetPKFunc<TPoco>(TPoco record)
         {
-            var pkName = GetPKName<TPoco>();
             var dynamicRecord = (dynamic)record!;
-            long pk = (long)dynamicRecord[pkName];
+            long pk = dynamicRecord.PK;
             return GetPKFunc<TPoco>(pk);
         }
 
