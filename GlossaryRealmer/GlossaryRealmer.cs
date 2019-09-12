@@ -3,8 +3,6 @@ using System.Runtime.CompilerServices;
 using Realmer.Operation;
 using Realms;
 
-[assembly: InternalsVisibleTo("GlossaryDatabase")]
-
 namespace Realmer
 {
     public class GlossaryRealmer

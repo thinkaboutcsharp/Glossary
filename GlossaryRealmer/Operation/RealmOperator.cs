@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Realmer.Scheme;
 using Realmer.Util;
 using Realms;
 using System;
@@ -288,7 +289,7 @@ namespace Realmer.Operation
             )
         {
             var scheme = SchemeMapper.GetSchemeType<TPoco>();
-            var records = realm!.All(scheme.Name).AsEnumerable() as IEnumerable<dynamic>;
+            var records = realm!.All(scheme.Name).AsEnumerable();
             if (condition != null) records = records.Where(condition);
             if (firstOrderKey != null)
             {
@@ -311,7 +312,7 @@ namespace Realmer.Operation
                 }
             }
 
-            return records;
+            return records.AsEnumerable();
         }
 
         IList<TPoco> MapResult<TPoco>(IEnumerable<dynamic> source)

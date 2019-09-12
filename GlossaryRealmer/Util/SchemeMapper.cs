@@ -8,13 +8,7 @@ namespace Realmer.Util
     {
         static internal Type GetSchemeType<TPoco>()
         {
-            var name = typeof(TPoco).Name;
-
-            return name switch
-            {
-                nameof(Poco.WordStore) => typeof(Scheme.WordStore),
-                _ => typeof(object)
-            };
+            return SwitchSchemeType<TPoco, Type>(SwitchType.Type);
         }
 
         static internal IEnumerable<long> GetPkEnum<TPoco>(IEnumerable<TPoco> objEnum)
@@ -36,13 +30,26 @@ namespace Realmer.Util
 
         static internal Func<dynamic, bool> GetPKFunc<TPoco>(long pk)
         {
-            var name = typeof(TPoco).Name;
+            return SwitchSchemeType<TPoco, Func<dynamic, bool>>(SwitchType.Func, pk);
+        }
 
-            return name switch
+        static TReturn SwitchSchemeType<TPoco, TReturn>(SwitchType type, long pk = 0L)
+        {
+            var pocoName = typeof(TPoco).Name;
+
+            if (pocoName == nameof(Poco.WordStore))
             {
-                nameof(Poco.WordStore) => new Func<dynamic, bool>((dynamic p) => p.WordId == pk),
-                _ => new Func<dynamic, bool>(_ => false)
-            };
+                if (type == SwitchType.Type) return (TReturn)(object)typeof(Scheme.WordStore);
+                else return (TReturn)(object)new Func<dynamic, bool>((dynamic p) => p.WordId == pk);
+            }
+
+            return (TReturn)new object();
+        }
+
+        enum SwitchType
+        {
+            Type,
+            Func
         }
     }
 }

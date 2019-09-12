@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Realmer.Scheme
 {
-    internal class WordStore : RealmObject
+    public class WordStore : RealmObject
     {
         [PrimaryKey]
         public long WordId { get; set; }
@@ -12,7 +12,7 @@ namespace Realmer.Scheme
         public string Word { get; set; }
     }
 
-    internal class WordStoreCounter : RealmObject
+    public class WordStoreCounter : RealmObject
     {
         public RealmInteger<long> Count { get; set; }
     }
