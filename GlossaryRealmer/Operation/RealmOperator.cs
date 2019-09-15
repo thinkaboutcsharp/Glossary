@@ -63,6 +63,8 @@ namespace Realmer.Operation
             CopyToBackup(backupPath);
         }
 
+        #region Update
+
         public void Add<TPoco>(TPoco newRecord)
         {
             realm!.Write(() =>
@@ -125,6 +127,8 @@ namespace Realmer.Operation
         {
             DeleteRecord<TPoco>(ids);
         }
+
+        #endregion
 
         #region Select
 
@@ -229,7 +233,7 @@ namespace Realmer.Operation
 
         void MigrateRealm(Migration migration, ulong oldSchemaVersion)
         {
-            throw new NotImplementedException();
+            //TODO: Migrate
         }
 
         Mapper CreateMap()
@@ -320,12 +324,13 @@ namespace Realmer.Operation
             if (source.Count() == 0) return new List<TPoco>();
 
             var sourceType = source.First().GetType();
-            var ctor = typeof(TPoco).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { sourceType }, null);
+            var destType = typeof(TPoco);
+            var builder = new PocoBuilder();
 
             var result = new List<TPoco>();
             foreach (var record in source)
             {
-                var pocoObj = (TPoco)ctor.Invoke(new object[] { record });
+                var pocoObj = builder.Build(sourceType, destType, record);
                 result.Add(pocoObj);
             }
             return result;

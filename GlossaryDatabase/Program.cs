@@ -28,7 +28,20 @@ namespace GlossaryDatabase
             config.ObjectClasses = new Type[]
             {
                 typeof(WordStore),
-                typeof(WordStoreCounter)
+                typeof(WordStoreCounter),
+                typeof(WordList),
+                typeof(Dictionary),
+                typeof(DictionaryCounter),
+                typeof(DictionaryList),
+                typeof(DictionaryInfo),
+                typeof(PerformanceWordByWord),
+                typeof(DictionaryPerformanceListWordByWord),
+                typeof(PerformanceDictionaryByDictionary),
+                typeof(User),
+                typeof(UserCounter),
+                typeof(GlossarySettings),
+                typeof(Glossary)
+
             };
             var realm = Realm.GetInstance(config);
 

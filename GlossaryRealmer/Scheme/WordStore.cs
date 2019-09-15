@@ -6,6 +6,8 @@ namespace Realmer.Scheme
 {
     public class WordStore : RealmObject
     {
+        internal long PK => WordId;
+
         [PrimaryKey]
         public long WordId { get; set; }
         public int DictionaryId { get; set; }

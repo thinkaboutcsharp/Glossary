@@ -21,6 +21,18 @@ namespace GlossaryRealmerTest.Spells
 
         public SetupAndTeardown(ITestOutputHelper output)
         {
+            void ClearOld(string dir)
+            {
+                if (!Directory.Exists(dir)) return;
+
+                foreach (var dirChild in Directory.EnumerateDirectories(dir)) ClearOld(dirChild);
+
+                foreach (var file in Directory.EnumerateFiles(dir))
+                {
+                    File.Delete(file);
+                }
+            }
+
             this.output = output;
 
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
@@ -29,7 +41,7 @@ namespace GlossaryRealmerTest.Spells
 
             comparer = new Comparers(output);
 
-            GlossaryRealmer.Uninstall();
+            ClearOld(appPath);
             realmer = GlossaryRealmer.GetRealmer();
         }
 

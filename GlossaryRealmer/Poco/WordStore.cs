@@ -5,21 +5,21 @@ namespace Realmer.Poco
 {
     public readonly struct WordStore
     {
-        public readonly long PK => WordId;
+        internal long PK => WordId;
 
-        public readonly long WordId { get; }
-        public readonly int DictionaryId { get; }
-        public readonly string Word { get; }
+        public long WordId { get; }
+        public int DictionaryId { get; }
+        public string Word { get; }
 
-        public WordStore(long id, int dictionaryId, string word)
+        public WordStore(long wordId, int dictionaryId, string word)
         {
-            WordId = id;
+            WordId = wordId;
             DictionaryId = dictionaryId;
             Word = word;
         }
 
-        internal WordStore(Scheme.WordStore scheme)
-            : this(scheme.WordId, scheme.DictionaryId, scheme.Word)
+        internal WordStore(dynamic carrier)
+            : this((long)carrier.WordId, (int)carrier.DictionaryId, (string)carrier.Word)
         { }
     }
 }

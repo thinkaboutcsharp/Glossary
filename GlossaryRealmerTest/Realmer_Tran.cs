@@ -215,7 +215,7 @@ namespace GlossaryRealmerTest
             };
             realmer.AddRange(data);
 
-            realmer.Delete<WordStore>(data[1].PK);
+            realmer.Delete<WordStore>(data[1].WordId);
 
             var destination = realmer.SelectAll<WordStore>();
             realmer.Close();
@@ -248,7 +248,7 @@ namespace GlossaryRealmerTest
             };
             realmer.AddRange(data);
 
-            realmer.DeleteRange<WordStore>(new long[] { data[1].PK, data[2].PK });
+            realmer.DeleteRange<WordStore>(new long[] { data[1].WordId, data[2].WordId });
 
             var destination = realmer.SelectAll<WordStore>();
             realmer.Close();
