@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace Realmer.Scheme
 {
-    internal class WordList : RealmObject
+    internal class UserList : RealmObject
     {
-        internal int PK => DictionaryId;
+        internal int PK => UserId;
 
         [PrimaryKey]
-        public int DictionaryId { get; set; }
+        public int UserId { get; set; }
         [Ignore]
-        public IList<WordStore> Words { get; }
+        public IList<User> Users { get; }
     }
 }

@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AutoMapper.Configuration.Annotations;
 using Realms;
+using System.Collections.Generic;
 
 namespace Realmer.Scheme
 {
-    public class DictionaryPerformanceListWordByWord : RealmObject
+    internal class DictionaryPerformanceListWordByWord : RealmObject
     {
         internal int PK => DictionaryId;
 
         [PrimaryKey]
         public int DictionaryId { get; set; }
-
-        [Util.PocoClass(typeof(Poco.PerformanceWordByWord))]
+        [Ignore]
         public IList<PerformanceWordByWord> WordPerformances { get; }
     }
 }

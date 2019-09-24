@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 
-namespace Realmer.Util
+namespace Realmer.Poco
 {
     static class SchemeMapper
     {
         static internal Type GetSchemeType<TPoco>()
         {
-            return SwitchSchemeType<TPoco, Type>(SwitchType.Type);
+            return GetSchemeType(typeof(TPoco));
+        }
+
+        static internal Type GetSchemeType(Type pocoType)
+        {
+            return SwitchSchemeType<Type>(pocoType, SwitchType.Type);
         }
 
         static internal IEnumerable<long> GetPkEnum<TPoco>(IEnumerable<TPoco> objEnum)
@@ -31,14 +36,14 @@ namespace Realmer.Util
 
         static internal Func<dynamic, bool> GetPKFunc<TPoco>(long pk)
         {
-            return SwitchSchemeType<TPoco, Func<dynamic, bool>>(SwitchType.Func, pk);
+            return SwitchSchemeType<Func<dynamic, bool>>(typeof(TPoco), SwitchType.Func, pk);
         }
 
-        static TReturn SwitchSchemeType<TPoco, TReturn>(SwitchType type, long pk = 0L)
+        static TReturn SwitchSchemeType<TReturn>(Type pocoType, SwitchType type, long pk = 0L)
         {
             if (type == SwitchType.Func) return (TReturn)(object)new Func<dynamic, bool>((dynamic p) => p.PK == pk);
 
-            var pocoName = typeof(TPoco).Name;
+            var pocoName = pocoType.Name;
 
             if (type == SwitchType.Type)
             {
@@ -74,6 +79,9 @@ namespace Realmer.Util
                         break;
                     case nameof(Poco.User):
                         schemeType = typeof(Scheme.User);
+                        break;
+                    case nameof(Poco.UserList):
+                        schemeType = typeof(Scheme.UserList);
                         break;
                     case nameof(Poco.Glossary):
                         schemeType = typeof(Scheme.Glossary);

@@ -22,11 +22,12 @@ namespace GlossaryRealmerTest
         [Fact]
         public void Add()
         {
-            var data = new WordStore(
-                long.MinValue,
-                0,
-                "TestData"
-            );
+            var data = new WordStore()
+            {
+                WordId = long.MinValue,
+                DictionaryId = 0,
+                Word = "TestData"
+            };
             realmer.Add(data);
 
             var destination = realmer.SelectAll<WordStore>();
@@ -43,16 +44,18 @@ namespace GlossaryRealmerTest
         {
             var data = new[]
             {
-                new WordStore(
-                    long.MinValue,
-                    0,
-                    "TestDataA"
-                ),
-                new WordStore(
-                    long.MinValue + 1,
-                    0,
-                    "TestDataB"
-                )
+                new WordStore()
+                {
+                    WordId = long.MinValue,
+                    DictionaryId = 0,
+                    Word = "TestDataA"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 0,
+                    Word = "TestDataB"
+                }
             };
             realmer.AddRange(data);
 
@@ -69,20 +72,27 @@ namespace GlossaryRealmerTest
         {
             var data = new[]
             {
-                new WordStore(
-                    long.MinValue,
-                    0,
-                    "TestDataA"
-                ),
-                new WordStore(
-                    long.MinValue + 1,
-                    0,
-                    "TestDataB"
-                )
+                new WordStore()
+                {
+                    WordId = long.MinValue,
+                    DictionaryId = 0,
+                    Word = "TestDataA"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 0,
+                    Word = "TestDataB"
+                }
             };
             realmer.AddRange(data);
 
-            var newData = new WordStore(long.MinValue + 1, 1, "TestDataB");
+            var newData = new WordStore()
+            {
+                WordId = long.MinValue + 1,
+                DictionaryId = 1,
+                Word = "TestDataB"
+            };
 
             realmer.Update(newData);
             data[1] = newData;
@@ -100,28 +110,41 @@ namespace GlossaryRealmerTest
         {
             var data = new[]
             {
-                new WordStore(
-                    long.MinValue,
-                    0,
-                    "TestDataA"
-                ),
-                new WordStore(
-                    long.MinValue + 1,
-                    0,
-                    "TestDataB"
-                ),
-                new WordStore(
-                    long.MinValue + 2,
-                    0,
-                    "TestDataC"
-                )
+                new WordStore()
+                {
+                    WordId = long.MinValue,
+                    DictionaryId = 0,
+                    Word = "TestDataA"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 0,
+                    Word = "TestDataB"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 2,
+                    DictionaryId = 0,
+                    Word = "TestDataC"
+                }
             };
             realmer.AddRange(data);
 
             var newData = new WordStore[]
             {
-                new WordStore(long.MinValue + 1, 1, "TestDataB"),
-                new WordStore(long.MinValue + 2, 1, "TestDataB")
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 1,
+                    Word = "TestDataB"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 2,
+                    DictionaryId = 1,
+                    Word = "TestDataB"
+                }
             };
 
             realmer.UpdateRange(newData);
@@ -141,16 +164,18 @@ namespace GlossaryRealmerTest
         {
             var data = new[]
             {
-                new WordStore(
-                    long.MinValue,
-                    0,
-                    "TestDataA"
-                ),
-                new WordStore(
-                    long.MinValue + 1,
-                    0,
-                    "TestDataB"
-                )
+                new WordStore()
+                {
+                    WordId = long.MinValue,
+                    DictionaryId = 0,
+                    Word = "TestDataA"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 0,
+                    Word = "TestDataB"
+                }
             };
             realmer.AddRange(data);
 
@@ -169,21 +194,24 @@ namespace GlossaryRealmerTest
         {
             var data = new[]
             {
-                new WordStore(
-                    long.MinValue,
-                    0,
-                    "TestDataA"
-                ),
-                new WordStore(
-                    long.MinValue + 1,
-                    0,
-                    "TestDataB"
-                ),
-                new WordStore(
-                    long.MinValue + 2,
-                    0,
-                    "TestDataC"
-                )
+                new WordStore()
+                {
+                    WordId = long.MinValue,
+                    DictionaryId = 0,
+                    Word = "TestDataA"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 0,
+                    Word = "TestDataB"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 2,
+                    DictionaryId = 0,
+                    Word = "TestDataC"
+                }
             };
             realmer.AddRange(data);
 
@@ -202,16 +230,18 @@ namespace GlossaryRealmerTest
         {
             var data = new[]
             {
-                new WordStore(
-                    long.MinValue,
-                    0,
-                    "TestDataA"
-                ),
-                new WordStore(
-                    long.MinValue + 1,
-                    0,
-                    "TestDataB"
-                )
+                new WordStore()
+                {
+                    WordId = long.MinValue,
+                    DictionaryId = 0,
+                    Word = "TestDataA"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 0,
+                    Word = "TestDataB"
+                }
             };
             realmer.AddRange(data);
 
@@ -230,21 +260,24 @@ namespace GlossaryRealmerTest
         {
             var data = new[]
             {
-                new WordStore(
-                    long.MinValue,
-                    0,
-                    "TestDataA"
-                ),
-                new WordStore(
-                    long.MinValue + 1,
-                    0,
-                    "TestDataB"
-                ),
-                new WordStore(
-                    long.MinValue + 2,
-                    0,
-                    "TestDataC"
-                )
+                new WordStore()
+                {
+                    WordId = long.MinValue,
+                    DictionaryId = 0,
+                    Word = "TestDataA"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 1,
+                    DictionaryId = 0,
+                    Word = "TestDataB"
+                },
+                new WordStore()
+                {
+                    WordId = long.MinValue + 2,
+                    DictionaryId = 0,
+                    Word = "TestDataC"
+                }
             };
             realmer.AddRange(data);
 

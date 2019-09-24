@@ -1,20 +1,16 @@
-﻿using System;
+﻿//using PropertyChanged;
+using Realmer.Util;
+using System;
 
 namespace Realmer.Poco
 {
-    public readonly struct GlossarySettings
+    //[AddINotifyPropertyChangedInterface]
+    public class GlossarySettings : PocoBase<GlossarySettings, int>
     {
-        internal int PK => ApplicationId;
-
         public int ApplicationId { get; }
 
-        public GlossarySettings(int applicationId)
+        public GlossarySettings() : base(o => o.ApplicationId, () => new Scheme.GlossarySettings())
         {
-            ApplicationId = applicationId;
         }
-
-        internal GlossarySettings(dynamic carrier)
-            : this((int)carrier.ApplicationId)
-        { }
     }
 }

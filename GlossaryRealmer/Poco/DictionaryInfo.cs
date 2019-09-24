@@ -1,20 +1,14 @@
-﻿using System;
+﻿//using PropertyChanged;
 
 namespace Realmer.Poco
 {
-    public readonly struct DictionaryInfo
+    //[AddINotifyPropertyChangedInterface]
+    public sealed class DictionaryInfo : Util.PocoBase<DictionaryInfo, int>
     {
-        internal int PK => DictionaryId;
+        public int DictionaryId { get; set; }
 
-        public int DictionaryId { get; }
-
-        public DictionaryInfo(int dictionaryId)
+        public DictionaryInfo() : base(o => o.DictionaryId, () => new Scheme.DictionaryInfo())
         {
-            DictionaryId = dictionaryId;
         }
-
-        internal DictionaryInfo(dynamic carrier)
-            : this((int)carrier.DictionaryId)
-        { }
     }
 }

@@ -1,24 +1,22 @@
-﻿using System;
+﻿using AutoMapper.Configuration.Annotations;
+//using PropertyChanged;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace Realmer.Poco
 {
-    public readonly struct WordList
+    //[AddINotifyPropertyChangedInterface]
+    public sealed class WordList : Util.PocoBase<WordList, int>
     {
-        internal int PK => DictionaryId;
-
-        public int DictionaryId { get; }
+        public int DictionaryId { get; set; }
+        [Ignore]
         public IReadOnlyList<WordStore> Words { get; }
 
-        public WordList(int dictionaryId, IList<WordStore> words)
+        public WordList() : base(o => o.DictionaryId, () => new Scheme.WordList())
         {
-            DictionaryId = dictionaryId;
-            Words = (IReadOnlyList<WordStore>)words;
+            Words = AddListProperty(o => o.Words);
         }
-
-        internal WordList(dynamic carrier)
-            : this((int)carrier.DictionaryId, (IList<WordStore>)carrier.Words)
-        { }
     }
 }

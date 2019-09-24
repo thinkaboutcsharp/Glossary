@@ -3,7 +3,7 @@ using Realms;
 
 namespace Realmer.Scheme
 {
-    public class PerformanceWordByWord : RealmObject
+    internal class PerformanceWordByWord : RealmObject
     {
         internal long PK => WordId;
 

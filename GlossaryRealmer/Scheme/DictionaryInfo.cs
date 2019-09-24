@@ -3,7 +3,7 @@ using Realms;
 
 namespace Realmer.Scheme
 {
-    public class DictionaryInfo : RealmObject
+    internal class DictionaryInfo : RealmObject
     {
         internal int PK => DictionaryId;
 

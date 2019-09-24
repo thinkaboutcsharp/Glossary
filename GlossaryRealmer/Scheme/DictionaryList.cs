@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AutoMapper.Configuration.Annotations;
 using Realms;
+using System.Collections.Generic;
 
 namespace Realmer.Scheme
 {
-    public class DictionaryList : RealmObject
+    internal class DictionaryList : RealmObject
     {
         internal int PK => ApplicationId;
 
         [PrimaryKey]
         public int ApplicationId { get; set; }
-
-        [Util.PocoClass(typeof(Poco.Dictionary))]
+        [Ignore]
         public IList<Dictionary> Dictionaries { get; }
     }
 }

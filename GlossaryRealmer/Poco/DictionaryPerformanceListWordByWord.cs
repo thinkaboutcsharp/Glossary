@@ -1,23 +1,19 @@
-﻿using System;
+﻿//using PropertyChanged;
+using Realmer.Util;
+using System;
 using System.Collections.Generic;
 
 namespace Realmer.Poco
 {
-    public readonly struct DictionaryPerformanceListWordByWord
+    //[AddINotifyPropertyChangedInterface]
+    public class DictionaryPerformanceListWordByWord : PocoBase<DictionaryPerformanceListWordByWord, int>
     {
-        internal int PK => DictionaryId;
-
         public int DictionaryId { get; }
         public IReadOnlyList<PerformanceWordByWord> WordPerformances { get; }
 
-        public DictionaryPerformanceListWordByWord(int dictionaryId, IList<PerformanceWordByWord> performances)
+        public DictionaryPerformanceListWordByWord() : base(o => o.DictionaryId, () => new Scheme.DictionaryPerformanceListWordByWord())
         {
-            DictionaryId = dictionaryId;
-            WordPerformances = (IReadOnlyList<PerformanceWordByWord>)performances;
+            WordPerformances = AddListProperty(o => o.WordPerformances);
         }
-
-        internal DictionaryPerformanceListWordByWord(dynamic carrier)
-            : this((int)carrier.DictionaryId, (IList<PerformanceWordByWord>)carrier.WordPerformances)
-        { }
     }
 }

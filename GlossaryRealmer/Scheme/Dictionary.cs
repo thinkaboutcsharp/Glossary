@@ -4,7 +4,7 @@ using Realms;
 
 namespace Realmer.Scheme
 {
-    public class Dictionary : RealmObject
+    internal class Dictionary : RealmObject
     {
         internal int PK => DictionaryId;
 
@@ -14,7 +14,7 @@ namespace Realmer.Scheme
         public DictionaryInfo Info { get; set; }
     }
 
-    public class DictionaryCounter : RealmObject
+    internal class DictionaryCounter : RealmObject
     {
         public RealmInteger<int> Count { get; set; }
     }

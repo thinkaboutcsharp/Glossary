@@ -1,25 +1,16 @@
-﻿using System.Data;
-using Scheme = Realmer.Scheme;
+﻿//using PropertyChanged;
 
 namespace Realmer.Poco
 {
-    public readonly struct WordStore
+    //[AddINotifyPropertyChangedInterface]
+    public sealed class WordStore : Util.PocoBase<WordStore, long>
     {
-        internal long PK => WordId;
+        public long WordId { get; set; }
+        public int DictionaryId { get; set; }
+        public string Word { get; set; }
 
-        public long WordId { get; }
-        public int DictionaryId { get; }
-        public string Word { get; }
-
-        public WordStore(long wordId, int dictionaryId, string word)
+        public WordStore() : base(o => o.WordId, () => new Scheme.WordStore())
         {
-            WordId = wordId;
-            DictionaryId = dictionaryId;
-            Word = word;
         }
-
-        internal WordStore(dynamic carrier)
-            : this((long)carrier.WordId, (int)carrier.DictionaryId, (string)carrier.Word)
-        { }
     }
 }

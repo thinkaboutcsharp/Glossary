@@ -1,26 +1,20 @@
-﻿using System;
+﻿//using PropertyChanged;
+using Realmer.Util;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Realmer.Poco
 {
-    public readonly struct User
+    //[AddINotifyPropertyChangedInterface]
+    public class User : PocoBase<User, int>
     {
-        internal int PK => UserId;
-
         public int UserId { get; }
         public string UserName { get; }
         public PerformanceDictionaryByDictionary PerformanceList { get; }
 
-        public User(int userId, string userName, PerformanceDictionaryByDictionary performanceList)
+        public User() : base(o => o.UserId, () => new Scheme.User())
         {
-            UserId = userId;
-            UserName = userName;
-            PerformanceList = performanceList;
         }
-
-        internal User(dynamic carrier)
-            : this((int)carrier.UserId, (string)carrier.UserName, (PerformanceDictionaryByDictionary)carrier.PerformanceList)
-        { }
     }
 }

@@ -18,7 +18,14 @@ namespace GlossaryRealmerTest
 
         public static IEnumerable<WordStore> MakeInitialDatas(int number)
         {
-            var datas = Enumerable.Range(0, number).Select(i => new WordStore(i, number - i, $"TestData{i}"));
+            var datas = Enumerable.Range(0, number).Select(
+                i => new WordStore()
+                {
+                    WordId = i,
+                    DictionaryId = number - i,
+                    Word = $"TestData{i}"
+                }
+                );
             return datas;
         }
 

@@ -1,23 +1,19 @@
-﻿using System;
+﻿//using PropertyChanged;
+using Realmer.Util;
+using System;
 using System.Collections.Generic;
 
 namespace Realmer.Poco
 {
-    public readonly struct DictionaryList
+    //[AddINotifyPropertyChangedInterface]
+    public class DictionaryList : PocoBase<DictionaryList, int>
     {
-        internal int PK => ApplicationId;
-
-        public int ApplicationId { get; }
+        public int ApplicationId { get; set; }
         public IReadOnlyList<Dictionary> Dictionaries { get; }
 
-        public DictionaryList(int applicationId, IList<Dictionary> dictionaries)
+        public DictionaryList() : base(o => o.ApplicationId, () => new Scheme.DictionaryList())
         {
-            ApplicationId = applicationId;
-            Dictionaries = (IReadOnlyList<Dictionary>)dictionaries;
+            Dictionaries = AddListProperty(o => o.Dictionaries);
         }
-
-        internal DictionaryList(dynamic carrier)
-            : this((int)carrier.ApplicationId, (IList<Dictionary>)carrier.Dictionaries)
-        { }
     }
 }

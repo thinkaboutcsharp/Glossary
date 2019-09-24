@@ -3,7 +3,7 @@ using Realms;
 
 namespace Realmer.Scheme
 {
-    public class User : RealmObject
+    internal class User : RealmObject
     {
         internal int PK => UserId;
 
@@ -13,7 +13,7 @@ namespace Realmer.Scheme
         public PerformanceDictionaryByDictionary PerformanceList { get; set; }
     }
 
-    public class UserCounter : RealmObject
+    internal class UserCounter : RealmObject
     {
         public RealmInteger<int> Count { get; set; }
     }

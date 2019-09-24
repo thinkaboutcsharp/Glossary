@@ -1,7 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Realmer.Operation;
 using Realms;
+
+[assembly: InternalsVisibleTo("GlossaryDatabase")]
+[assembly: InternalsVisibleTo("GlossaryRealmerTest")]
 
 namespace Realmer
 {
@@ -24,7 +28,7 @@ namespace Realmer
 
         public static IGlossaryRealmer GetRealmer()
         {
-            if (instance ==  null) instance = new GlossaryRealmer();
+            if (instance == null) instance = new GlossaryRealmer();
             return instance.ope!;
         }
 

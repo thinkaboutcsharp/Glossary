@@ -5,7 +5,7 @@ using Realms;
 
 namespace Realmer.Scheme
 {
-    public class GlossarySettings : RealmObject
+    internal class GlossarySettings : RealmObject
     {
         internal int PK => ApplicationId;
 

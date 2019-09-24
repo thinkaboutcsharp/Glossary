@@ -1,24 +1,18 @@
-﻿using System;
+﻿//using PropertyChanged;
+using Realmer.Util;
+using System;
 
 namespace Realmer.Poco
 {
-    public readonly struct PerformanceWordByWord
+    //[AddINotifyPropertyChangedInterface]
+    public class PerformanceWordByWord : PocoBase<PerformanceWordByWord, long>
     {
-        internal long PK => WordId;
-
         public long WordId { get; }
         public int TestCount { get; }
         public int CorrectCount { get; }
 
-        public PerformanceWordByWord(long wordId, int testCount, int correctCount)
+        public PerformanceWordByWord() : base(o => o.WordId, () => new Scheme.PerformanceWordByWord())
         {
-            WordId = wordId;
-            TestCount = testCount;
-            CorrectCount = correctCount;
         }
-
-        internal PerformanceWordByWord(dynamic carrier)
-            : this((long)carrier.WordId, (int)carrier.TestCount, (int)carrier.CorrectCount)
-        { }
     }
 }

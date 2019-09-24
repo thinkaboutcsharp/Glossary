@@ -38,6 +38,7 @@ namespace GlossaryDatabase
                 typeof(DictionaryPerformanceListWordByWord),
                 typeof(PerformanceDictionaryByDictionary),
                 typeof(User),
+                typeof(UserList),
                 typeof(UserCounter),
                 typeof(GlossarySettings),
                 typeof(Glossary)
