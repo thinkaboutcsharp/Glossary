@@ -13,7 +13,12 @@ namespace Realmer.Poco
 
         public PerformanceDictionaryByDictionary() : base(o => o.UserId, () => new Scheme.PerformanceDictionaryByDictionary())
         {
-            DictionaryPerformances = AddListProperty(o => o.DictionaryPerformances);
+            DictionaryPerformances =
+                AddListProperty<
+                    DictionaryPerformanceListWordByWord,
+                    Scheme.PerformanceDictionaryByDictionary,
+                    Scheme.DictionaryPerformanceListWordByWord>
+                    (o => o.DictionaryPerformances);
         }
     }
 }

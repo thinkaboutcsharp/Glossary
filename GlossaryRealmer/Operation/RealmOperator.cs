@@ -33,6 +33,7 @@ namespace Realmer.Operation
         {
             realm = InitRealm();
             Mapper = InitMapper();
+            GlossaryMapper.Mapper = Mapper;
         }
 
         public void Dispose()
@@ -323,7 +324,7 @@ namespace Realmer.Operation
             DeleteRecord<TPoco>(SchemeMapper.GetPkEnum(records));
         }
 
-        IEnumerable<RealmObject> SelectInternal<TPoco, TFirstKey, TSecondKey>(
+        IEnumerable<dynamic> SelectInternal<TPoco, TFirstKey, TSecondKey>(
             Expression<Func<TPoco, bool>>? condition,
             Expression<Func<TPoco, TFirstKey>>? firstOrderKey,
             Expression<Func<TPoco, TSecondKey>>? secondOrderKey,
@@ -332,21 +333,21 @@ namespace Realmer.Operation
             )
         {
             var scheme = SchemeMapper.GetSchemeType<TPoco>();
-            var records = realm!.All(scheme.Name);
-            if (condition != null) records = records.Where(ExchangeConditionLambda(condition)).AsQueryable();
+            var records = realm!.All(scheme.Name).AsEnumerable();
+            if (condition != null) records = records.Where(ExchangeConditionLambda(condition));
             if (firstOrderKey != null)
             {
-                records = firstDirection switch
+                records = (IEnumerable<dynamic>)(firstDirection switch
                 {
-                    OrderBy.Ascending => records.OrderBy(ExchangeOrderLambda(firstOrderKey!)).AsQueryable(),
-                    OrderBy.Descending => records.OrderByDescending(ExchangeOrderLambda(firstOrderKey!)).AsQueryable(),
+                    OrderBy.Ascending => records.OrderBy(ExchangeOrderLambda(firstOrderKey!)),
+                    OrderBy.Descending => records.OrderByDescending(ExchangeOrderLambda(firstOrderKey!)),
                     _ => throw new ArgumentException("Not OrderBy member.", nameof(firstDirection))
-                };
+                });
 
                 if (secondOrderKey != null)
                 {
                     var orderedRecords = records as IOrderedEnumerable<dynamic>;
-                    records = (IQueryable<dynamic>)(secondDirection switch
+                    records = (IEnumerable<dynamic>)(secondDirection switch
                     {
                         OrderBy.Ascending => orderedRecords.ThenBy(ExchangeOrderLambda(secondOrderKey!)),
                         OrderBy.Descending => orderedRecords.ThenByDescending(ExchangeOrderLambda(secondOrderKey!)),
@@ -355,18 +356,18 @@ namespace Realmer.Operation
                 }
             }
 
-            return (IEnumerable<RealmObject>)records.AsEnumerable();
+            return records;
         }
 
-        IList<TPoco> MapResult<TPoco>(IEnumerable<RealmObject> source) where TPoco : PocoClass, new()
+        IList<TPoco> MapResult<TPoco>(IEnumerable<dynamic> source) where TPoco : PocoClass, new()
         {
-            if (source.Any()) return new List<TPoco>();
+            if (!source.Any()) return new List<TPoco>();
 
             var result = new List<TPoco>();
             foreach (var record in source)
             {
                 var pocoObj = new TPoco();
-                pocoObj.Initialize(record, Mapper);
+                pocoObj.SetScheme(record);
                 result.Add(pocoObj);
             }
             return result;
@@ -386,36 +387,10 @@ namespace Realmer.Operation
 
         Func<dynamic, TResult> ExchangeLambda<TPoco, TResult>(Expression<Func<TPoco, TResult>> originalLambda)
         {
-            var converter = new ConvertPoco2Scheme<TResult>(SchemeMapper.GetSchemeType<TPoco>());
+            var converter = new ConvertLambdaPoco2Scheme<TResult>(SchemeMapper.GetSchemeType<TPoco>());
             var schemeExpression = (LambdaExpression)converter.Visit(originalLambda);
             var schemeLambda = (Func<dynamic, TResult>)schemeExpression.Compile();
             return schemeLambda;
-        }
-
-        class ConvertPoco2Scheme<TResult> : ExpressionVisitor
-        {
-            ParameterExpression convertedParameter;
-            Type schemeType;
-
-            internal ConvertPoco2Scheme(Type schemeType) => this.schemeType = schemeType;
-
-            protected override Expression VisitLambda<T>(Expression<T> node)
-            {
-                convertedParameter = Expression.Parameter(typeof(RealmObject), node.Parameters[0].Name);
-                var convertedLambda = Expression.Lambda<Func<RealmObject, TResult>>(node.Body, convertedParameter);
-                return base.VisitLambda(convertedLambda);
-            }
-
-            protected override Expression VisitMember(MemberExpression node)
-            {
-                var convertedMemberExpression = Expression.Property(
-                    Expression.Convert(convertedParameter, schemeType),
-                    node.Member.Name
-                    );
-                return convertedMemberExpression;
-
-                //TODO: IList Member Count Property
-            }
         }
 
         #endregion

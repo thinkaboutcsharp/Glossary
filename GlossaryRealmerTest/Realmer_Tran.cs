@@ -87,15 +87,11 @@ namespace GlossaryRealmerTest
             };
             realmer.AddRange(data);
 
-            var newData = new WordStore()
-            {
-                WordId = long.MinValue + 1,
-                DictionaryId = 1,
-                Word = "TestDataB"
-            };
+            var current = realmer.Select<WordStore>(o => o.WordId == long.MinValue + 1).FirstOrDefault();
+            current.DictionaryId = 1;
+            realmer.Update(current);
 
-            realmer.Update(newData);
-            data[1] = newData;
+            data[1].DictionaryId = 1;
 
             var destination = realmer.SelectAll<WordStore>();
             realmer.Close();
@@ -131,25 +127,12 @@ namespace GlossaryRealmerTest
             };
             realmer.AddRange(data);
 
-            var newData = new WordStore[]
-            {
-                new WordStore()
-                {
-                    WordId = long.MinValue + 1,
-                    DictionaryId = 1,
-                    Word = "TestDataB"
-                },
-                new WordStore()
-                {
-                    WordId = long.MinValue + 2,
-                    DictionaryId = 1,
-                    Word = "TestDataB"
-                }
-            };
+            var current = realmer.Select<WordStore>(o => o.WordId != long.MinValue);
+            foreach (var word in current) word.DictionaryId = 1;
+            realmer.UpdateRange(current);
 
-            realmer.UpdateRange(newData);
-            data[1] = newData[0];
-            data[2] = newData[1];
+            data[1].DictionaryId = 1;
+            data[2].DictionaryId = 1;
 
             var destination = realmer.SelectAll<WordStore>();
             realmer.Close();

@@ -16,7 +16,7 @@ namespace Realmer.Poco
 
         public WordList() : base(o => o.DictionaryId, () => new Scheme.WordList())
         {
-            Words = AddListProperty(o => o.Words);
+            Words = AddListProperty<WordStore, Scheme.WordList, Scheme.WordStore>(o => o.Words);
         }
     }
 }

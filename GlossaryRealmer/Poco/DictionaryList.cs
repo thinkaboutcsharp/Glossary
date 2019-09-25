@@ -13,7 +13,7 @@ namespace Realmer.Poco
 
         public DictionaryList() : base(o => o.ApplicationId, () => new Scheme.DictionaryList())
         {
-            Dictionaries = AddListProperty(o => o.Dictionaries);
+            Dictionaries = AddListProperty<Dictionary, Scheme.DictionaryList, Scheme.Dictionary>(o => o.Dictionaries);
         }
     }
 }

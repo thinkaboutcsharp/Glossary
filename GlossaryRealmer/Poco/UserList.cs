@@ -15,7 +15,7 @@ namespace Realmer.Poco
 
         public UserList() : base(o => o.UserId, () => new Scheme.UserList())
         {
-            Users = AddListProperty(o => o.Users);
+            Users = AddListProperty<User, Scheme.UserList, Scheme.User>(o => o.Users);
         }
     }
 }

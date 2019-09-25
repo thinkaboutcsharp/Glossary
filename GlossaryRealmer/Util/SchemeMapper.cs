@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+using System.Linq.Expressions;
 
 namespace Realmer.Poco
 {
@@ -98,6 +97,43 @@ namespace Realmer.Poco
         {
             Type,
             Func
+        }
+    }
+
+    internal class ConvertLambdaPoco2Scheme<TResult> : ConvertLambdaPoco2Scheme<dynamic, TResult>
+    {
+        internal ConvertLambdaPoco2Scheme(Type schemeType) : base(schemeType) { }
+    }
+
+    internal class ConvertLambdaPoco2Scheme<TParameter, TResult> : ExpressionVisitor
+    {
+        ParameterExpression convertedParameter;
+        Type schemeType;
+
+        internal ConvertLambdaPoco2Scheme(Type schemeType) => this.schemeType = schemeType;
+
+        protected override Expression VisitLambda<T>(Expression<T> node)
+        {
+            convertedParameter = Expression.Parameter(typeof(TParameter), node.Parameters[0].Name);
+            var convertedLambda = Expression.Lambda<Func<TParameter, TResult>>(
+                Expression.Convert(
+                    node.Body,
+                    typeof(TResult)
+                    ),
+                convertedParameter
+                );
+            return base.VisitLambda(convertedLambda);
+        }
+
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            var convertedMemberExpression = Expression.Property(
+                Expression.Convert(convertedParameter, schemeType),
+                node.Member.Name
+                );
+            return convertedMemberExpression;
+
+            //TODO: IList Member Count Property
         }
     }
 }
