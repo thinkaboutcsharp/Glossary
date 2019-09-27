@@ -4,3 +4,4 @@
 // a specific target and scoped to a namespace, type, member, etc.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size.", Justification = "<保留中>", Scope = "member", Target = "~M:GlossaryRealmerTest.Realmer_SelectRecursive.SelectSingle")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size.", Justification = "<保留中>", Scope = "member", Target = "~M:GlossaryRealmerTest.Realmer_SelectRecursive.SelectMultiInSingle")]
