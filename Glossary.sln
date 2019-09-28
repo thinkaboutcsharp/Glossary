@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseMaster", "DatabaseM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlossaryRealmerTest", "GlossaryRealmerTest\GlossaryRealmerTest.csproj", "{D681B576-BB65-41C2-BD09-2FDBCFE9DBB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlossaryFunctionTest", "GlossaryFunctionTest\GlossaryFunctionTest.csproj", "{70457FAA-E547-4796-B59C-28B7C38E0B29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlossaryFunctionTest", "GlossaryFunctionTest\GlossaryFunctionTest.csproj", "{70457FAA-E547-4796-B59C-28B7C38E0B29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +39,7 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E565D573-5B8F-4E98-8793-63D4EB67FA40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E565D573-5B8F-4E98-8793-63D4EB67FA40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E565D573-5B8F-4E98-8793-63D4EB67FA40}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{E565D573-5B8F-4E98-8793-63D4EB67FA40}.Debug|iPhone.ActiveCfg = Debug|Any CPU
 		{E565D573-5B8F-4E98-8793-63D4EB67FA40}.Debug|iPhone.Build.0 = Debug|Any CPU
 		{E565D573-5B8F-4E98-8793-63D4EB67FA40}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU

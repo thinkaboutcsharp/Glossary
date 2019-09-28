@@ -38,6 +38,13 @@ namespace Realmer
         IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(Expression<Func<TPoco, TKeyFirst>> firstKey, Expression<Func<TPoco, TKeySecond>> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending) where TPoco : PocoClass, new();
         IEnumerable<TPoco> Select<TPoco, TKey>(Expression<Func<TPoco, bool>> condition, Expression<Func<TPoco, TKey>> firstKey, OrderBy firstDirection = OrderBy.Ascending) where TPoco : PocoClass, new();
         IEnumerable<TPoco> Select<TPoco, TKeyFirst, TKeySecond>(Expression<Func<TPoco, bool>> condition, Expression<Func<TPoco, TKeyFirst>> firstKey, Expression<Func<TPoco, TKeySecond>> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending) where TPoco : PocoClass, new();
+
+        IEnumerable<dynamic> SelectAll<TPoco>(Expression<Func<TPoco, dynamic>> projection) where TPoco : PocoClass, new();
+        IEnumerable<dynamic> Select<TPoco>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, bool>> condition) where TPoco : PocoClass, new();
+        IEnumerable<dynamic> Select<TPoco, TKey>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, TKey>> firstKey, OrderBy firstDirection = OrderBy.Ascending) where TPoco : PocoClass, new();
+        IEnumerable<dynamic> Select<TPoco, TKeyFirst, TKeySecond>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, TKeyFirst>> firstKey, Expression<Func<TPoco, TKeySecond>> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending) where TPoco : PocoClass, new();
+        IEnumerable<dynamic> Select<TPoco, TKey>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, bool>> condition, Expression<Func<TPoco, TKey>> firstKey, OrderBy firstDirection = OrderBy.Ascending) where TPoco : PocoClass, new();
+        IEnumerable<dynamic> Select<TPoco, TKeyFirst, TKeySecond>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, bool>> condition, Expression<Func<TPoco, TKeyFirst>> firstKey, Expression<Func<TPoco, TKeySecond>> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending) where TPoco : PocoClass, new();
     }
 
     public enum OrderBy

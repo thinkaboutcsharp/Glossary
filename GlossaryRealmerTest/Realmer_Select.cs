@@ -1,8 +1,10 @@
 ﻿using Realmer;
 using Realmer.Poco;
+using Realms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
@@ -118,6 +120,25 @@ namespace GlossaryRealmerTest
             Assert.Equal(5, results.Count());
 
             comparer.EqualsObject(datas.Where(s => s.WordId < 5).OrderBy(s => s.DictionaryId), results);
+        }
+
+        [Fact]
+        public void SelectProjection()
+        {
+            var datas = MakeInitialDatas(3);
+            realmer.AddRange(datas);
+
+            var results = realmer.SelectAll<WordStore>(s => new { s.WordId, s.DictionaryId });
+
+            Assert.Equal(3, results.Count());
+
+            var dataList = datas.ToList();
+            var resultList = results.ToList();
+            for (int i = 0; i < 3; i++)
+            {
+                Assert.Equal(dataList[i].WordId, resultList[i].WordId);
+                Assert.Equal(dataList[i].DictionaryId, resultList[i].DictionaryId);
+            }
         }
     }
 }

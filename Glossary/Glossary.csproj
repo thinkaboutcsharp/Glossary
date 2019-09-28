@@ -32,6 +32,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>GlossaryResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Views\GlossaryView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Update="App.xaml">
@@ -52,5 +55,8 @@
     <None Update="Views\NewItemPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 </Project>

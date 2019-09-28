@@ -3,6 +3,9 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Glossary.Services;
 using Glossary.Views;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("GlossaryFunctionTest")]
 
 namespace Glossary
 {
@@ -13,7 +16,7 @@ namespace Glossary
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
+            //DependencyService.Register<MockDataStore>();
             MainPage = new AppShell();
         }
 

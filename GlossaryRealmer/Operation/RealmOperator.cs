@@ -184,7 +184,53 @@ namespace Realmer.Operation
             return result;
         }
 
-        #endregion
+        #endregion //Select
+
+        #region SelectDynamic
+
+        public IEnumerable<dynamic> SelectAll<TPoco>(Expression<Func<TPoco, dynamic>> projection) where TPoco : PocoClass, new()
+        {
+            var records = SelectInternal<TPoco, object, object>(null, null, null);
+            var result = MapResult<TPoco>(records!);
+            return result;
+        }
+
+        public IEnumerable<dynamic> Select<TPoco>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, bool>> condition) where TPoco : PocoClass, new()
+        {
+            var records = SelectInternal<TPoco, object, object>(condition, null, null, projection: projection);
+            var result = MapResult<TPoco>(records!);
+            return result;
+        }
+
+        public IEnumerable<dynamic> Select<TPoco, TKey>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, TKey>> firstKey, OrderBy firstDirection = OrderBy.Ascending) where TPoco : PocoClass, new()
+        {
+            var records = SelectInternal<TPoco, TKey, object>(null, firstKey, null, firstDirection, projection: projection);
+            var result = MapResult<TPoco>(records!);
+            return result;
+        }
+
+        public IEnumerable<dynamic> Select<TPoco, TKeyFirst, TKeySecond>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, TKeyFirst>> firstKey, Expression<Func<TPoco, TKeySecond>> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending) where TPoco : PocoClass, new()
+        {
+            var records = SelectInternal(null, firstKey, secondKey, firstDirection, secondDirection, projection: projection);
+            var result = MapResult<TPoco>(records!);
+            return result;
+        }
+
+        public IEnumerable<dynamic> Select<TPoco, TKey>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, bool>> condition, Expression<Func<TPoco, TKey>> firstKey, OrderBy firstDirection = OrderBy.Ascending) where TPoco : PocoClass, new()
+        {
+            var records = SelectInternal<TPoco, TKey, object>(condition, firstKey, null, firstDirection, projection: projection);
+            var result = MapResult<TPoco>(records!);
+            return result;
+        }
+
+        public IEnumerable<dynamic> Select<TPoco, TKeyFirst, TKeySecond>(Expression<Func<TPoco, dynamic>> projection, Expression<Func<TPoco, bool>> condition, Expression<Func<TPoco, TKeyFirst>> firstKey, Expression<Func<TPoco, TKeySecond>> secondKey, OrderBy firstDirection = OrderBy.Ascending, OrderBy secondDirection = OrderBy.Ascending) where TPoco : PocoClass, new()
+        {
+            var records = SelectInternal(condition, firstKey, secondKey, firstDirection, secondDirection, projection: projection);
+            var result = MapResult<TPoco>(records!);
+            return result;
+        }
+
+        #endregion //SelectDynamic
 
         #region Private
 
@@ -300,6 +346,8 @@ namespace Realmer.Operation
 
         #region Transaction
 
+        #region Delete
+
         void DeleteRecord<TPoco>(IEnumerable<long> ids)
         {
             var schemeType = SchemeMapper.GetSchemeType<TPoco>();
@@ -324,12 +372,17 @@ namespace Realmer.Operation
             DeleteRecord<TPoco>(SchemeMapper.GetPkEnum(records));
         }
 
+        #endregion
+
+        #region Select
+
         IEnumerable<dynamic> SelectInternal<TPoco, TFirstKey, TSecondKey>(
             Expression<Func<TPoco, bool>>? condition,
             Expression<Func<TPoco, TFirstKey>>? firstOrderKey,
             Expression<Func<TPoco, TSecondKey>>? secondOrderKey,
             OrderBy firstDirection = OrderBy.Ascending,
-            OrderBy secondDirection = OrderBy.Ascending
+            OrderBy secondDirection = OrderBy.Ascending,
+            Expression<Func<TPoco, dynamic>>? projection = null
             )
         {
             var scheme = SchemeMapper.GetSchemeType<TPoco>();
@@ -355,6 +408,7 @@ namespace Realmer.Operation
                     });
                 }
             }
+            if (projection != null) records = records.Select(ExchangeProjectionLambda(projection));
 
             return records;
         }
@@ -385,6 +439,11 @@ namespace Realmer.Operation
             return ExchangeLambda(order);
         }
 
+        Func<dynamic, dynamic> ExchangeProjectionLambda<TPoco>(Expression<Func<TPoco, dynamic>> projection)
+        {
+            return ExchangeLambda(projection);
+        }
+
         Func<dynamic, TResult> ExchangeLambda<TPoco, TResult>(Expression<Func<TPoco, TResult>> originalLambda)
         {
             var converter = new ConvertLambdaPoco2Scheme<TResult>(SchemeMapper.GetSchemeType<TPoco>());
@@ -393,7 +452,9 @@ namespace Realmer.Operation
             return schemeLambda;
         }
 
-        #endregion
+        #endregion //Expression
+
+        #endregion //Select
 
         #endregion //Transaction
 
